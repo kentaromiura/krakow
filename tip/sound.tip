@@ -1,0 +1,45 @@
+;sound.tip crea la libreria sound.asm
+
+program
+var freq,counter
+sub delay
+asm
+mov ax,0xffff
+delay1:
+nop
+dec ax
+cmp ax,0
+jnz delay1
+fasm
+fsub
+sub nosound
+asm
+mov dx,0x61
+in al,dx
+and al,0xfc
+OUT DX,AL
+fasm
+fsub
+sub sound
+asm
+mov eax,0x1234dd
+xor ecx,ecx
+mov cx,[freq]
+div ecx
+mov [counter],ax
+mov dx,0x43
+mov ax,0xb6
+out dx,ax
+mov ax,[counter]
+mov dx,0x42
+out dx,al
+shr ax,4
+out dx,al
+mov dx,0x61
+in al,dx
+or al,3
+out dx,al
+fasm
+fsub
+inizio
+fine.

@@ -36,4 +36,4 @@ IN AL,DX
 OR AL,3
 OUT DX,AL
 RET
-;licenza GPL ... carlesso cristian
+; MIT LICENSE carlesso cristian

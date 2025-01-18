@@ -1,0 +1,18 @@
+program
+importa graph
+importa misc
+var i
+inizio
+setmodex
+per(i=0:i<254:i=i+1)
+    x=random
+    delay
+    c=random
+    delay
+    y=random
+    delay
+    PUTPIXEL
+fper
+leggi(tmp)
+restore
+fine.

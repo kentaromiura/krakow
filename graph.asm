@@ -405,5 +405,3 @@ L10b:
 L10f:
 L9:
 	RET
-;licenza GPL proprieta intellettuale di kentaromiura alias 
-;carlesso cristian
