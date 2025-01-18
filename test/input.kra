@@ -1,0 +1,52 @@
+program
+var i
+inizio
+leggi(i)
+se i=65|i=69|i=73|i=79|i=85|i=97|i=101|i=105|i=111|i=117 ;codici ascii delle vocali
+        asm
+        segment .data
+        stri db 'PReMuTa uNa VoCaLe$'
+        segment .text
+        mov ax,stri
+        mov dx,stri
+        mov ah,9h
+        int 21h
+        fasm
+invece
+        se i>47 & i<58
+                asm
+                segment .data
+                stri2 db 'numero premuto$'
+                segment .text
+                mov ax,stri2
+                mov dx,stri2
+                mov ah,9h
+                int 21h
+                fasm
+        invece se (i>64 & i<91 )|(i>96 & i<123)
+                asm
+                segment .data
+                stri3 db 'Consonante premuta$'
+                segment .text
+                mov ax,stri3
+                mov dx,stri3
+                mov ah,9h
+                int 21h
+                fasm
+                invece
+                asm
+                segment .data
+                stri4 db 'non alphanumerico premuto$'
+                segment .text
+                mov ax,stri4
+                mov dx,stri4
+                mov ah,9h
+                int 21h
+                fasm
+               fse
+        fse
+fse
+scrivi(58,10,13)
+scrivi(i,10,13)
+ 
+fine.     

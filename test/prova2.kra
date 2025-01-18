@@ -1,0 +1,46 @@
+program
+
+var a,b,c
+
+inizio
+A=0
+B=0
+C=0
+
+se (a>b)
+c=65
+invece
+c=67
+fse
+SCRIVI(C)
+se (a c=65
+invece
+c=67
+fse
+SCRIVI(C)
+se (a<>b)
+c=65
+invece
+c=67
+fse
+SCRIVI(C)
+se (a=b)
+c=65
+invece
+c=67
+fse
+SCRIVI(C)
+se (a>=b)
+c=65
+invece
+c=67
+fse
+SCRIVI(C)
+se (a<=b)
+c=65
+invece
+c=67
+fse
+SCRIVI(C)
+
+fine.

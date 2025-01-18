@@ -1,0 +1,50 @@
+program
+var i
+inizio
+ 
+asm                               ;questa funzione assembly stampa una stringa                            
+stringa1 db "ciao bello,funziona l'assembly inline!!$"
+mov ax,stringa1
+mov dx,stringa1                   
+{
+ 
+QUESTO COMMENTO DEVE SERVIRE A DIMOSTRARE CHE E POSSIBILE UTILIZZARE
+DEI COMMENTI MULTILINEA DENTRO AD UN CODICE ASSEMBLY INLINE!!
+ 
+}
+mov ah,9h
+int 21h     ;questo interrupt e colui che scrive
+fasm
+scrivi(10,13)                                ;newline equivale a printf("\n");
+ 
+ 
+ 
+per(i=65:i<65+26:i=i+1) ;questo per stampa l'alfabeto
+scrivi(i)
+fper
+scrivi(10,13)
+ 
+rep(i=65:i>=65+26:i=i+1) ;questo rep fa la stessa cosa
+scrivi(i);
+frep
+scrivi(10,13)
+ 
+asm {dimostrazione di come inserire un commento nel codice
+     assembly generato}
+nop ;qui inizia il mentre(i>64)
+fasm
+ 
+i=i-1 ;qua si stampa l'alfabeto al contrario
+mentre(i>64)
+scrivi(i)
+i=i-1
+fmentre
+scrivi(10,13)
+ 
+i=65+25 ;qua pure
+ripeti
+        scrivi(i)
+        i=i-1
+finche(i<=64)
+ 
+fine.

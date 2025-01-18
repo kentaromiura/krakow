@@ -1,0 +1,39 @@
+; originally posted 2004/04/13 https://www.freeforumzone.com/mobile/d/2925993/LaPasseraSoftware-Presenta-KraKow/discussione.aspx?p=1&pl=5&idm1=37268083
+SEGMENT .data
+FREQ Dw 0
+COUNTER Dw 0
+SEGMENT .text
+DELAY:
+MOV AX,0XFFFF
+DELAY1:
+NOP
+DEC AX
+CMP AX,0
+JNZ DELAY1
+RET
+NOSOUND:
+MOV DX,0X61
+IN AL,DX
+AND AL,0XFC
+OUT DX,AL
+RET
+SOUND:
+MOV EAX,0X1234DD
+XOR ECX,ECX
+MOV CX,[FREQ]
+DIV ECX
+MOV [COUNTER],AX
+MOV DX,0X43
+MOV AX,0XB6
+OUT DX,AX
+MOV AX,[COUNTER]
+MOV DX,0X42
+OUT DX,AL
+SHR AX,4
+OUT DX,AL
+MOV DX,0X61
+IN AL,DX
+OR AL,3
+OUT DX,AL
+RET
+;licenza GPL ... carlesso cristian

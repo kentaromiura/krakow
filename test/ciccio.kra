@@ -1,0 +1,13 @@
+program
+var i,long j,byte q
+inizio
+loop
+se i>64 ;ciccio scureggione
+last {
+ciccio indisposto!!
+}
+invece i=i+1
+fse
+floop
+scrivi(i)
+fine.

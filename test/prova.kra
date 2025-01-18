@@ -1,0 +1,7 @@
+program
+var i
+inizio
+per(i=65:i<65+26:i=i+1)
+scrivi(i)
+fper
+fine.
