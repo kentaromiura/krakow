@@ -6,51 +6,51 @@ program Krakow;
 { Constant Declarations }
 
 const TAB = ^I;
-CR = ^M;
-LF = ^J;
+      CR  = ^M;
+      LF  = ^J;
 
-Farlab: integer = 0;(*Aggiunto x gestire salti di tipo FAR*)
-LCount: integer = 0;
-NEntry: integer = 0;
+      Farlab: integer = 0;(*Aggiunto x gestire salti di tipo FAR*)
+      LCount: integer = 0;
+      NEntry: integer = 0;
 
 
 {--------------------------------------------------------------}
 { Type Declarations }
 
-type Symbol = string[8];
+type Symbol = string[16];
 
-SymTab = array[1..1000] of Symbol;
+     SymTab = array[1..1000] of Symbol;
 
-TabPtr = ^SymTab;
+     TabPtr = ^SymTab;
 
 
 {--------------------------------------------------------------}
 { Variable Declarations }
 
 var iniz : boolean;
-ciclo: integer;
-proc:string;{proc attuale}
-Look : char; { Lookahead Character }
-Token: char; { Encoded Token }
-Value: string[16]; { Unencoded Token }
-{ sasm: string;}
-sasm:string[80];
+    ciclo: integer;
+    proc:string;{proc attuale}
+    Look : char;             { Lookahead Character }
+    Token: char;             { Encoded Token       }
+    Value: string[16];       { Unencoded Token     }
+{    sasm: string;}
+    sasm:string[80];
 const MaxEntry = 100;
 
-var ST : array[1..MaxEntry] of Symbol;
-SType: array[1..MaxEntry] of char;
+var ST   : array[1..MaxEntry] of Symbol;
+    SType: array[1..MaxEntry] of char;
 
 
 {--------------------------------------------------------------}
 { Definition of Keywords and Token Types }
 
-const NKW = 32;
-NKW1 = 33;
+const NKW =  32;
+      NKW1 = 33;
 
 const KWlist: array[1..NKW] of Symbol =
 ('SE', 'INVECE', 'FSE', 'MENTRE', 'FMENTRE','RIPETI','FINCHE','LEGGI',
-'SCRIVI', 'VAR', 'FINE','LOOP','FLOOP','WORD','BYTE','LONG','LAST','PER','FPER','REP',
-'FREP','AST','FAST','STAMPAB','ASM','FASM','SUB','FSUB','SUBR','FSUBR','RETURN','IMPORTA');
+ 'SCRIVI', 'VAR', 'FINE','LOOP','FLOOP','WORD','BYTE','LONG','LAST','PER','FPER','REP',
+ 'FREP','AST','FAST','STAMPAB','ASM','FASM','SUB','FSUB','SUBR','FSUBR','RETURN','IMPORTA');
 
 const KWcode: string[NKW1] = 'xileweqeRWvezehjkfPeOeEeBaeSereXI';
 
@@ -65,7 +65,7 @@ procedure GetChar; forward;
 procedure Store(Name: Symbol);forward;
 procedure GetCharX;
 begin
-Read(Look);
+   Read(Look);
 end;
 
 {--------------------------------------------------------------}
@@ -73,8 +73,8 @@ end;
 
 procedure Error(s: string);
 begin
-WriteLn;
-WriteLn(^G, 'Error: ', s, '.');
+   WriteLn;
+   WriteLn(^G, 'Error: ', s, '.');
 end;
 
 
@@ -83,8 +83,8 @@ end;
 
 procedure Abort(s: string);
 begin
-Error(s);
-Halt;
+   Error(s);
+   Halt;
 end;
 
 
@@ -93,7 +93,7 @@ end;
 
 procedure Expected(s: string);
 begin
-Abort(s + ' Expected');
+   Abort(s + ' Expected');
 end;
 
 {--------------------------------------------------------------}
@@ -101,7 +101,7 @@ end;
 
 procedure Undefined(n: string);
 begin
-Abort('Undefined Identifier ' + n);
+   Abort('Undefined Identifier ' + n);
 end;
 
 
@@ -110,7 +110,7 @@ end;
 
 procedure Duplicate(n: string);
 begin
-Abort('Duplicate Identifier ' + n);
+   Abort('Duplicate Identifier ' + n);
 end;
 
 
@@ -119,7 +119,7 @@ end;
 
 procedure CheckIdent;
 begin
-if Token <> 'x' then Expected('Identifier');
+   if Token <> 'x' then Expected('Identifier');
 end;
 
 
@@ -128,7 +128,7 @@ end;
 
 function IsAlpha(c: char): boolean;
 begin
-IsAlpha := UpCase(c) in ['A'..'Z'];
+   IsAlpha := UpCase(c) in ['A'..'Z'];
 end;
 
 
@@ -137,7 +137,7 @@ end;
 
 function IsDigit(c: char): boolean;
 begin
-IsDigit := c in ['0'..'9'];
+   IsDigit := c in ['0'..'9'];
 end;
 
 
@@ -146,7 +146,7 @@ end;
 
 function IsAlNum(c: char): boolean;
 begin
-IsAlNum := IsAlpha(c) or IsDigit(c);
+   IsAlNum := IsAlpha(c) or IsDigit(c);
 end;
 
 
@@ -155,7 +155,7 @@ end;
 
 function IsAddop(c: char): boolean;
 begin
-IsAddop := c in ['+', '-'];
+   IsAddop := c in ['+', '-'];
 end;
 
 
@@ -164,7 +164,7 @@ end;
 
 function IsMulop(c: char): boolean;
 begin
-IsMulop := c in ['*', '/'];
+   IsMulop := c in ['*', '/'];
 end;
 
 
@@ -173,12 +173,12 @@ end;
 
 function IsOrop(c: char): boolean;
 begin
-IsOrop := c in ['|', '~'];
+   IsOrop := c in ['|', '~'];
 end;
 
 function Isstring(c: char): boolean;
 begin
-Isstring := not (c in ['"']);
+   Isstring := not (c in ['"']);
 end;
 
 
@@ -187,7 +187,7 @@ end;
 
 function IsRelop(c: char): boolean;
 begin
-IsRelop := c in ['=', '#', '<', '>'];
+   IsRelop := c in ['=', '#', '<', '>'];
 end;
 
 
@@ -196,7 +196,7 @@ end;
 
 function IsWhite(c: char): boolean;
 begin
-IsWhite := c in [' ', TAB, CR, LF];
+   IsWhite := c in [' ', TAB, CR, LF];
 end;
 
 
@@ -204,8 +204,8 @@ end;
 { Skip Over Leading White Space }
 procedure SkipWhite;
 begin
-while IsWhite(Look) do
-GetChar;
+   while IsWhite(Look) do
+      GetChar;
 end;
 
 
@@ -214,26 +214,26 @@ end;
 
 function Lookup(T: TabPtr; s: string; n: integer): integer;
 var i: integer;
-found: Boolean;
+    found: Boolean;
 begin
-found := false;
-i := n;
-while (i > 0) and not found do
-if s = T^[i] then
-found := true
-else
-dec(i);
-Lookup := i;
+   found := false;
+   i := n;
+   while (i > 0) and not found do
+      if s = T^[i] then
+         found := true
+      else
+         dec(i);
+   Lookup := i;
 end;
 
 
 {--------------------------------------------------------------}
 { Locate a Symbol in Table }
-{ Returns the index of the entry. Zero if not present. }
+{ Returns the index of the entry.  Zero if not present. }
 
 function Locate(N: Symbol): integer;
 begin
-Locate := Lookup(@ST, n, NEntry);
+   Locate := Lookup(@ST, n, NEntry);
 end;
 
 
@@ -242,18 +242,18 @@ end;
 
 function InTable(n: Symbol): Boolean;
 begin
-InTable := Lookup(@ST, n, NEntry) <> 0;
+   InTable := Lookup(@ST, n, NEntry) <> 0;
 end;
 
 
 {--------------------------------------------------------------}
-{ Check to See if an Identifier is in the Symbol Table }
+{ Check to See if an Identifier is in the Symbol Table         }
 { Report an error if it's not. }
 
 
 procedure CheckTable(N: Symbol);
 begin
-if not InTable(N) then Undefined(N);
+   if not InTable(N) then Undefined(N);
 end;
 
 
@@ -264,7 +264,7 @@ end;
 
 procedure CheckDup(N: Symbol);
 begin
-if InTable(N) then Duplicate(N);
+   if InTable(N) then Duplicate(N);
 end;
 
 
@@ -273,11 +273,11 @@ end;
 
 procedure AddEntry(N: Symbol; T: char);
 begin
-CheckDup(N);
-if NEntry = MaxEntry then Abort('Symbol Table Full');
-Inc(NEntry);
-ST[NEntry] := N;
-SType[NEntry] := T;
+   CheckDup(N);
+   if NEntry = MaxEntry then Abort('Symbol Table Full');
+   Inc(NEntry);
+   ST[NEntry] := N;
+   SType[NEntry] := T;
 end;
 
 
@@ -286,38 +286,38 @@ end;
 
 procedure GetName;
 begin
-SkipWhite;
-if Not IsAlpha(Look) then Expected('Identifier');
-Token := 'x';
-Value := '';
-repeat
-Value := Value + UpCase(Look);
-GetChar;
-until not IsAlNum(Look);
+   SkipWhite;
+   if Not IsAlpha(Look) then Expected('Identifier');
+   Token := 'x';
+   Value := '';
+   repeat
+      Value := Value + UpCase(Look);
+      GetChar;
+   until not IsAlNum(Look);
 end;
 
 procedure GetsubName;
 begin
-SkipWhite;
-if Not IsAlpha(Look) then Expected('sub name');
-Token := 'S';
-Value := '';
-repeat
-Value := Value + UpCase(Look);
-GetChar;
-until not IsAlNum(Look);
+   SkipWhite;
+   if Not IsAlpha(Look) then Expected('sub name');
+   Token := 'S';
+   Value := '';
+   repeat
+      Value := Value + UpCase(Look);
+      GetChar;
+   until not IsAlNum(Look);
 end;
 
 
 procedure stringa;
 begin
-SkipWhite;
-Token := 'x';
-Value := '';
-repeat
-Value := Value + Look;
-GetChar;
-until not Isstring(Look);
+   SkipWhite;
+   Token := 'x';
+   Value := '';
+   repeat
+      Value := Value + Look;
+      GetChar;
+   until not Isstring(Look);
 end;
 
 
@@ -325,14 +325,14 @@ end;
 { Get a Number }
 procedure GetNum;
 begin
-SkipWhite;
-if not IsDigit(Look) then Expected('Number');
-Token := '#';
-Value := '';
-repeat
-Value := Value + Look;
-GetChar;
-until not IsDigit(Look);
+   SkipWhite;
+   if not IsDigit(Look) then Expected('Number');
+   Token := '#';
+   Value := '';
+   repeat
+      Value := Value + Look;
+      GetChar;
+   until not IsDigit(Look);
 end;
 
 
@@ -341,10 +341,10 @@ end;
 
 procedure GetOp;
 begin
-SkipWhite;
-Token := Look;
-Value := Look;
-GetChar;
+   SkipWhite;
+   Token := Look;
+   Value := Look;
+   GetChar;
 end;
 
 
@@ -353,10 +353,10 @@ end;
 
 procedure Next;
 begin
-SkipWhite;
-if IsAlpha(Look) then GetName
-else if IsDigit(Look) then GetNum
-else GetOp;
+   SkipWhite;
+   if IsAlpha(Look) then GetName
+   else if IsDigit(Look) then GetNum
+   else GetOp;
 end;
 
 
@@ -365,8 +365,8 @@ end;
 
 procedure Scan;
 begin
-if Token = 'x' then
-Token := KWcode[Lookup(Addr(KWlist), Value, NKW) + 1];
+   if Token = 'x' then
+      Token := KWcode[Lookup(Addr(KWlist), Value, NKW) + 1];
 end;
 
 
@@ -375,8 +375,8 @@ end;
 
 procedure MatchString(x: string);
 begin
-if Value <> x then Expected('''' + x + '''');
-Next;
+   if Value <> x then Expected('''' + x + '''');
+   Next;
 end;
 
 
@@ -385,7 +385,7 @@ end;
 
 procedure Emit(s: string);
 begin
-Write(TAB, s);
+   Write(TAB, s);
 end;
 
 
@@ -394,8 +394,8 @@ end;
 
 procedure EmitLn(s: string);
 begin
-Emit(s);
-WriteLn;
+   Emit(s);
+   WriteLn;
 end;
 
 
@@ -405,16 +405,16 @@ end;
 function NewLabel: string;
 var S: string;
 begin
-Str(LCount, S);
-NewLabel := 'L' + S;
-Inc(LCount);
+   Str(LCount, S);
+   NewLabel := 'L' + S;
+   Inc(LCount);
 end;
 function Newfar: string;
 var S: string;
 begin
-Str(farlab, S);
-Newfar := 'n' + S;
-Inc(farlab);
+   Str(farlab, S);
+   Newfar := 'n' + S;
+   Inc(farlab);
 end;
 
 
@@ -423,7 +423,7 @@ end;
 
 procedure PostLabel(L: string);
 begin
-WriteLn(L, ':');
+   WriteLn(L, ':');
 end;
 
 
@@ -431,15 +431,15 @@ end;
 { Clear the Primary Register }
 procedure Clear;
 begin
-(*EmitLn('CLR D0');*)
-Emitln('XOR EAX,EAX');
+   (*EmitLn('CLR D0');*)
+   Emitln('XOR EAX,EAX');
 end;
 
 {
 procedure Clear;
 begin
-(*EmitLn('CLR D0');*)
-Emitln('XOR AX,AX');
+   (*EmitLn('CLR D0');*)
+   Emitln('XOR AX,AX');
 end;
 }
 
@@ -447,14 +447,14 @@ end;
 { Negate the Primary Register }
 procedure Negate;
 begin
-(* EmitLn('NEG D0');*)
+(*   EmitLn('NEG D0');*)
 Emitln('NEG EAX');
 end;
 
 {
 procedure Negate;
 begin
-(* EmitLn('NEG D0');*)
+(*   EmitLn('NEG D0');*)
 Emitln('NEG AX');
 end;
 }
@@ -465,13 +465,13 @@ end;
 
 procedure NotIt;
 begin
-(* EmitLn('NOT D0');*)
+(*   EmitLn('NOT D0');*)
 Emitln('NOT EAX');
 end;
 {
 procedure NotIt;
 begin
-(* EmitLn('NOT D0');*)
+(*   EmitLn('NOT D0');*)
 Emitln('NOT AX');
 end;
 }
@@ -481,10 +481,10 @@ end;
 
 procedure LoadConst(n: string);
 begin
-(* Emit('MOVE #');
-WriteLn(n, ',D0');*)
-Emit('MOV EAX,');
-WriteLn(n);
+(*   Emit('MOVE #');
+   WriteLn(n, ',D0');*)
+   Emit('MOV EAX,');
+   WriteLn(n);
 
 end;
 
@@ -495,11 +495,11 @@ procedure LoadVar(Name: symbol);forward;
 {
 procedure LoadVar(Name: string);
 begin
-if not InTable(Name) then Undefined(Name);
-(* EmitLn('MOVE ' + Name + '(PC),D0');*)(*da fare .*)
-EmitLn('MOV AX,[' + Name + ']');
+   if not InTable(Name) then Undefined(Name);
+ (*  EmitLn('MOVE ' + Name + '(PC),D0');*)(*da fare .*)
+    EmitLn('MOV AX,[' + Name + ']');
 end;
-}
+ }
 
 {---------------------------------------------------------------}
 { Push Primary onto Stack }
@@ -510,8 +510,8 @@ end;
 {
 procedure Push;
 begin
-(* EmitLn('MOVE D0,-(SP)');*)
-Emitln('PUSH AX');
+(*   EmitLn('MOVE D0,-(SP)');*)
+     Emitln('PUSH AX');
 end;
 }
 
@@ -522,7 +522,7 @@ procedure PopAdd;
 begin
 Emitln('POP EDX');
 Emitln('ADD EAX,EDX');
-(* EmitLn('ADD (SP)+,D0');*)
+(*   EmitLn('ADD (SP)+,D0');*)
 end;
 
 {
@@ -530,7 +530,7 @@ procedure PopAdd;
 begin
 Emitln('POP DX');
 Emitln('ADD AX,DX');
-(* EmitLn('ADD (SP)+,D0');*)
+(*   EmitLn('ADD (SP)+,D0');*)
 end;
 }
 
@@ -538,21 +538,21 @@ end;
 { Subtract Primary from Top of Stack }
 procedure PopSub;
 begin
-(* EmitLn('SUB (SP)+,D0');
-EmitLn('NEG D0');*)
-Emitln('POP EDX');
-Emitln('SUB EAX,EDX');
-EMitln('NEG EAX');
+(*   EmitLn('SUB (SP)+,D0');
+   EmitLn('NEG D0');*)
+   Emitln('POP EDX');
+   Emitln('SUB EAX,EDX');
+   EMitln('NEG EAX');
 end;
 
 {
 procedure PopSub;
 begin
-(* EmitLn('SUB (SP)+,D0');
-EmitLn('NEG D0');*)
-Emitln('POP DX');
-Emitln('SUB AX,DX');
-EMitln('NEG AX');
+(*   EmitLn('SUB (SP)+,D0');
+   EmitLn('NEG D0');*)
+   Emitln('POP DX');
+   Emitln('SUB AX,DX');
+   EMitln('NEG AX');
 end;
 }
 
@@ -580,11 +580,11 @@ end;
 procedure PopDiv;
 begin
 (*
-EmitLn('MOVE (SP)+,D7');
-EmitLn('EXT.L D7');
-EmitLn('DIVS D0,D7');
-EmitLn('MOVE D7,D0');
-*)
+   EmitLn('MOVE (SP)+,D7');
+   EmitLn('EXT.L D7');
+   EmitLn('DIVS D0,D7');
+   EmitLn('MOVE D7,D0');
+   *)
 EmitLn('POP ECX');
 EmitLn('XOR EDX,EDX');
 Emitln('XCHG ECX,EAX');
@@ -595,11 +595,11 @@ end;
 procedure PopDiv;
 begin
 (*
-EmitLn('MOVE (SP)+,D7');
-EmitLn('EXT.L D7');
-EmitLn('DIVS D0,D7');
-EmitLn('MOVE D7,D0');
-*)
+   EmitLn('MOVE (SP)+,D7');
+   EmitLn('EXT.L D7');
+   EmitLn('DIVS D0,D7');
+   EmitLn('MOVE D7,D0');
+   *)
 EmitLn('POP CX');
 EmitLn('XOR DX,DX');
 Emitln('XCHG CX,AX');
@@ -613,16 +613,16 @@ var a:string;
 begin
 a:=newlabel;
 writeln('SEGMENT .data public class=data align=1');
-emitln(a+' db " $"');
+emitln(a+' db "   $"');
 writeln('SEGMENT .text public class=code align=1');
 emitln('mov cl,100');
 emitln('div cl');
 emitln('add al,48');
 emitln('mov ['+a+'],al');
 emitln('cmp ah,0');
-emitln('jne g'+a); (* *)
-emitln('jmp '+a+'e'); (* Questo sostituisce je *)
-emitln('g'+a+':'); (* *)
+emitln('jne g'+a);    (*                         *)
+emitln('jmp '+a+'e'); (*  Questo sostituisce je  *)
+emitln('g'+a+':');    (*                         *)
 emitln('mov al,ah');
 emitln('xor ah,ah');
 emitln('mov cl,10');
@@ -663,34 +663,34 @@ emitln('int 21h');
 end;
 procedure stampab;
 begin
-Next;
-MatchString('(');
-Expression;
-WriteItb;
-while Token = ',' do begin
-Next;
-Expression;
-WriteItb;
-end;
-MatchString(')');
+   Next;
+   MatchString('(');
+   Expression;
+   WriteItb;
+   while Token = ',' do begin
+      Next;
+      Expression;
+      WriteItb;
+   end;
+   MatchString(')');
 end;
 {---------------------------------------------------------------}
 { AND Top of Stack with Primary }
 procedure PopAnd;
 begin
 (*
-EmitLn('AND (SP)+,D0');*)
-EmitLn('POP EDX');
-EmitLn('AND EAX,EDX');
+   EmitLn('AND (SP)+,D0');*)
+   EmitLn('POP EDX');
+   EmitLn('AND EAX,EDX');
 end;
 
 {
 procedure PopAnd;
 begin
 (*
-EmitLn('AND (SP)+,D0');*)
-EmitLn('POP DX');
-EmitLn('AND AX,DX');
+   EmitLn('AND (SP)+,D0');*)
+   EmitLn('POP DX');
+   EmitLn('AND AX,DX');
 end;
 }
 
@@ -700,17 +700,17 @@ end;
 procedure PopOr;
 begin
 (*
-EmitLn('OR (SP)+,D0');*)
-EmitLn('POP EDX');
-EmitLn('OR EAX,EDX');
+   EmitLn('OR (SP)+,D0');*)
+   EmitLn('POP EDX');
+   EmitLn('OR EAX,EDX');
 end;
 {
 procedure PopOr;
 begin
 (*
-EmitLn('OR (SP)+,D0');*)
-EmitLn('POP DX');
-EmitLn('OR AX,DX');
+   EmitLn('OR (SP)+,D0');*)
+   EmitLn('POP DX');
+   EmitLn('OR AX,DX');
 end;
 }
 
@@ -719,18 +719,18 @@ end;
 procedure PopXor;
 begin
 (*
-EmitLn('EOR (SP)+,D0');*)
-Emitln('POP EDX');
-EmitLn('XOR EAX,EDX');
+   EmitLn('EOR (SP)+,D0');*)
+   Emitln('POP EDX');
+   EmitLn('XOR EAX,EDX');
 end;
 
 {
 procedure PopXor;
 begin
 (*
-EmitLn('EOR (SP)+,D0');*)
-Emitln('POP DX');
-EmitLn('XOR AX,DX');
+   EmitLn('EOR (SP)+,D0');*)
+   Emitln('POP DX');
+   EmitLn('XOR AX,DX');
 end;
 }
 
@@ -739,18 +739,18 @@ end;
 procedure PopCompare;
 begin
 (*
-EmitLn('CMP (SP)+,D0');*)
-EmitLn('POP EDX');
-EmitLN('CMP EAX,EDX');
+   EmitLn('CMP (SP)+,D0');*)
+   EmitLn('POP EDX');
+   EmitLN('CMP EAX,EDX');
 end;
 
 {
 procedure PopCompare;
 begin
 (*
-EmitLn('CMP (SP)+,D0');*)
-EmitLn('POP DX');
-EmitLN('CMP AX,DX');
+   EmitLn('CMP (SP)+,D0');*)
+   EmitLn('POP DX');
+   EmitLN('CMP AX,DX');
 end;
 }
 
@@ -761,13 +761,13 @@ procedure SetEqual;
 var d:string;
 begin
 d:=newlabel;
-(* EmitLn('SEQ D0');
-EmitLn('EXT D0');*)
-emitln('je g'+d); (*jne*)
-emitln('jmp l'+d);
-emitln('g'+d+':');
-EmitLn('mov EAx,0xffffffff');
-postlabel('l'+d);
+(*   EmitLn('SEQ D0');
+   EmitLn('EXT D0');*)
+   emitln('je g'+d);  (*jne*)
+   emitln('jmp l'+d);
+   emitln('g'+d+':');
+   EmitLn('mov EAx,0xffffffff');
+   postlabel('l'+d);
 end;
 
 
@@ -778,13 +778,13 @@ procedure SetnEqual;
 var s:string;
 begin
 s:=newlabel;
-(*EmitLn('SNE D0');
-EmitLn('EXT D0');*)
-emitln('jne g'+s);
-EmitLn('jmp l'+s); {je}
-emitln('g'+s+':');
-Emitln('mov eax,0xffffffff');
-postlabel('l'+s);
+   (*EmitLn('SNE D0');
+   EmitLn('EXT D0');*)
+   emitln('jne g'+s);
+   EmitLn('jmp l'+s);  {je}
+   emitln('g'+s+':');
+   Emitln('mov eax,0xffffffff');
+   postlabel('l'+s);
 end;
 
 
@@ -796,13 +796,13 @@ var
 s:string;
 begin
 s:=newlabel;
-(* EmitLn('SLT D0');
-EmitLn('EXT D0');*)
-emitln('jg g'+s);
-Emitln('jmp l'+s); {jng}
-emitln('g'+s+':');
-Emitln('mov eax,0xffffffff');
-postlabel('l'+s);
+(*   EmitLn('SLT D0');
+   EmitLn('EXT D0');*)
+   emitln('jg g'+s);
+   Emitln('jmp l'+s); {jng}
+   emitln('g'+s+':');
+   Emitln('mov eax,0xffffffff');
+   postlabel('l'+s);
 end;
 
 
@@ -814,13 +814,13 @@ procedure SetgREATER;
 var s:string;
 begin
 s:=newlabel;
-(* EmitLn('SGT D0');
-EmitLn('EXT D0');*)
-emitln('jl g'+s);
-EmitLn('jmp l'+s); (*jnl*)
-emitln('g'+s+':');
-Emitln('mov eax,0xffffffff');
-postlabel('l'+s);
+(*   EmitLn('SGT D0');
+   EmitLn('EXT D0');*)
+   emitln('jl g'+s);
+   EmitLn('jmp l'+s);     (*jnl*)
+   emitln('g'+s+':');
+   Emitln('mov eax,0xffffffff');
+   postlabel('l'+s);
 end;
 
 
@@ -831,13 +831,13 @@ procedure SetGREATEROrEqual;
 var s:string;
 begin
 s:=newlabel;
-(* EmitLn('SGE D0');
-EmitLn('EXT D0');*)
-emitln('jle g'+s);
-Emitln('jmp l'+s);(*jnle*)
-emitln('g'+s+':');
-Emitln('mov eax,0xffffffff');
-postlabel('l'+s);
+(*   EmitLn('SGE D0');
+   EmitLn('EXT D0');*)
+   emitln('jle g'+s);
+   Emitln('jmp l'+s);(*jnle*)
+   emitln('g'+s+':');
+   Emitln('mov eax,0xffffffff');
+   postlabel('l'+s);
 end;
 
 
@@ -848,13 +848,13 @@ procedure SetLESSOrEqual;
 var s:string;
 begin
 s:=newlabel;
-(* EmitLn('SLE D0');
-EmitLn('EXT D0');*)
-emitln('jge g'+s);
-Emitln('jmp l'+s);(*jnge*)
-emitln('g'+s+':');
-Emitln('mov eax,0xffffffff');
-postlabel('l'+s);
+(*   EmitLn('SLE D0');
+   EmitLn('EXT D0');*)
+   emitln('jge g'+s);
+   Emitln('jmp l'+s);(*jnge*)
+   emitln('g'+s+':');
+   Emitln('mov eax,0xffffffff');
+   postlabel('l'+s);
 end;
 
 
@@ -864,20 +864,20 @@ end;
 procedure Store(Name: string);
 begin
 (*
-EmitLn('LEA ' + Name + '(PC),A0');
-EmitLn('MOVE D0,(A0)')*)(*Da Fare*)
-EmitLn('MOV ['+Name+'],AX');
+   EmitLn('LEA ' + Name + '(PC),A0');
+   EmitLn('MOVE D0,(A0)')*)(*Da Fare*)
+   EmitLn('MOV ['+Name+'],AX');
 end;
-}
+  }
 
 {---------------------------------------------------------------}
-{ Branch Unconditional }
+{ Branch Unconditional  }
 
 procedure Branch(L: string);
 begin
 (*
-EmitLn('BRA ' + L);*)
-EmitLn('JMP ' + L);
+   EmitLn('BRA ' + L);*)
+   EmitLn('JMP ' + L);
 end;
 
 
@@ -888,22 +888,22 @@ procedure BranchFalse(L: string);
 var s:string;
 begin
 (*
-EmitLn('TST D0');
-EmitLn('BEQ ' + L);*)
+   EmitLn('TST D0');
+   EmitLn('BEQ ' + L);*)
 s:=newfar;
-EmitLn('CMP EAX,0FFFFFFFFh');
-emitln('je '+s);
-EmitLn('Jmp ' + L);
-emitln(s+':');
+   EmitLn('CMP EAX,0FFFFFFFFh');
+   emitln('je '+s);
+   EmitLn('Jmp ' + L);
+   emitln(s+':');
 end;
 procedure BranchTrue(L: string);
 var s:string;
 begin
 s:=newfar;
-EmitLn('CMP EAX,0FFFFFFFFh');
-emitln('jne '+s);
-EmitLn('Jmp ' + L);
-emitln(s+':');
+   EmitLn('CMP EAX,0FFFFFFFFh');
+   emitln('jne '+s);
+   EmitLn('Jmp ' + L);
+   emitln(s+':');
 end;
 
 
@@ -918,8 +918,8 @@ Emitln('xor ah,ah');
 Emitln('mov ['+Name+'],ax');
 (*
 
-EmitLn('BSR READ');
-Store(Name);*)(*da fare*)
+   EmitLn('BSR READ');
+   Store(Name);*)(*da fare*)
 end;
 
 
@@ -931,7 +931,7 @@ Emitln('mov dl,al');
 Emitln('mov ah,2');
 Emitln('INT 21h');
 
-(* EmitLn('BSR WRITE');*)(*da fare*)
+(*   EmitLn('BSR WRITE');*)(*da fare*)
 end;
 
 
@@ -941,7 +941,7 @@ end;
 procedure Header;
 begin
 
-(* WriteLn('WARMST', TAB, 'EQU $A01E');*)(*Da Fare*)
+(*   WriteLn('WARMST', TAB, 'EQU $A01E');*)(*Da Fare*)
 end;
 
 
@@ -951,7 +951,7 @@ end;
 procedure Prolog;
 begin
 {Writeln('SEGMENT .text');}
-(* PostLabel('MAIN');*)(*da fare*)
+(*   PostLabel('MAIN');*)(*da fare*)
 postlabel('..start');
 PostLabel('Start');
 emitln('mov ax,data');
@@ -965,12 +965,12 @@ end;
 procedure Epilog;
 begin
 (*
-EmitLn('DC WARMST');
-EmitLn('END MAIN'); *)(*da fare*)
-Emitln('mov ax,4c00h');
-Emitln('int 21h');
-Emitln('segment .stack stack class=stack align=1');
-emitln('times 64000 db 0');
+   EmitLn('DC WARMST');
+   EmitLn('END MAIN'); *)(*da fare*)
+   Emitln('mov ax,4c00h');
+   Emitln('int 21h');
+   Emitln('segment .stack stack class=stack align=1');
+   emitln('times 64000 db 0');
 end;
 
 
@@ -979,7 +979,7 @@ end;
 
 procedure Allocate(Name, Val: string;kind:char);
 begin
-(* WriteLn(Name, ':', TAB, 'DC ', Val);*)
+(*   WriteLn(Name, ':', TAB, 'DC ', Val);*)
 if(iniz=false)then begin
 Writeln('SEGMENT .data public class=data align=1');
 iniz:=true;
@@ -996,19 +996,19 @@ procedure BoolExpression; Forward;
 
 procedure Factor;
 begin
-if Token = '(' then begin
-Next;
-BoolExpression;
-MatchString(')');
-end
-else begin
-if Token = 'x' then
-LoadVar(Value)
-else if Token = '#' then
-LoadConst(Value)
-else Expected('Math Factor');
-Next;
-end;
+   if Token = '(' then begin
+      Next;
+      BoolExpression;
+      MatchString(')');
+      end
+   else begin
+      if Token = 'x' then
+         LoadVar(Value)
+      else if Token = '#' then
+         LoadConst(Value)
+      else Expected('Math Factor');
+      Next;
+   end;
 end;
 
 
@@ -1017,9 +1017,9 @@ end;
 
 procedure Multiply;
 begin
-Next;
-Factor;
-PopMul;
+   Next;
+   Factor;
+   PopMul;
 end;
 
 
@@ -1028,9 +1028,9 @@ end;
 
 procedure Divide;
 begin
-Next;
-Factor;
-PopDiv;
+   Next;
+   Factor;
+   PopDiv;
 end;
 
 
@@ -1039,14 +1039,14 @@ end;
 
 procedure Term;
 begin
-Factor;
-while IsMulop(Token) do begin
-Push;
-case Token of
-'*': Multiply;
-'/': Divide;
-end;
-end;
+   Factor;
+   while IsMulop(Token) do begin
+      Push;
+      case Token of
+       '*': Multiply;
+       '/': Divide;
+      end;
+   end;
 end;
 
 
@@ -1055,9 +1055,9 @@ end;
 
 procedure Add;
 begin
-Next;
-Term;
-PopAdd;
+   Next;
+   Term;
+   PopAdd;
 end;
 
 
@@ -1066,9 +1066,9 @@ end;
 
 procedure Subtract;
 begin
-Next;
-Term;
-PopSub;
+   Next;
+   Term;
+   PopSub;
 end;
 
 
@@ -1077,17 +1077,17 @@ end;
 
 procedure Expression;
 begin
-if IsAddop(Token) then
-Clear
-else
-Term;
-while IsAddop(Token) do begin
-Push;
-case Token of
-'+': Add;
-'-': Subtract;
-end;
-end;
+   if IsAddop(Token) then
+      Clear
+   else
+      Term;
+   while IsAddop(Token) do begin
+      Push;
+      case Token of
+       '+': Add;
+       '-': Subtract;
+      end;
+   end;
 end;
 
 
@@ -1096,8 +1096,8 @@ end;
 
 procedure CompareExpression;
 begin
-Expression;
-PopCompare;
+   Expression;
+   PopCompare;
 end;
 
 
@@ -1106,8 +1106,8 @@ end;
 
 procedure NextExpression;
 begin
-Next;
-CompareExpression;
+   Next;
+   CompareExpression;
 end;
 
 
@@ -1116,8 +1116,8 @@ end;
 
 procedure Equal;
 begin
-NextExpression;
-SetEqual;
+   NextExpression;
+   SetEqual;
 end;
 
 
@@ -1126,8 +1126,8 @@ end;
 
 procedure LessOrEqual;
 begin
-NextExpression;
-SetLessOrEqual;
+   NextExpression;
+   SetLessOrEqual;
 end;
 
 
@@ -1136,8 +1136,8 @@ end;
 
 procedure NotEqual;
 begin
-NextExpression;
-SetNEqual;
+   NextExpression;
+   SetNEqual;
 end;
 
 
@@ -1146,15 +1146,15 @@ end;
 
 procedure Less;
 begin
-Next;
-case Token of
-'=': LessOrEqual;
-'>': NotEqual;
-else begin
-CompareExpression;
-SetLess;
-end;
-end;
+   Next;
+   case Token of
+     '=': LessOrEqual;
+     '>': NotEqual;
+   else begin
+           CompareExpression;
+           SetLess;
+        end;
+   end;
 end;
 
 
@@ -1163,15 +1163,15 @@ end;
 
 procedure Greater;
 begin
-Next;
-if Token = '=' then begin
-NextExpression;
-SetGreaterOrEqual;
-end
-else begin
-CompareExpression;
-SetGreater;
-end;
+   Next;
+   if Token = '=' then begin
+      NextExpression;
+      SetGreaterOrEqual;
+      end
+   else begin
+      CompareExpression;
+      SetGreater;
+   end;
 end;
 
 
@@ -1181,15 +1181,15 @@ end;
 
 procedure Relation;
 begin
-Expression;
-if IsRelop(Token) then begin
-Push;
-case Token of
-'=': Equal;
-'<': Less;
-'>': Greater;
-end;
-end;
+   Expression;
+   if IsRelop(Token) then begin
+      Push;
+      case Token of
+       '=': Equal;
+       '<': Less;
+       '>': Greater;
+      end;
+   end;
 end;
 
 
@@ -1198,13 +1198,13 @@ end;
 
 procedure NotFactor;
 begin
-if Token = '!' then begin
-Next;
-Relation;
-NotIt;
-end
-else
-Relation;
+   if Token = '!' then begin
+      Next;
+      Relation;
+      NotIt;
+      end
+   else
+      Relation;
 end;
 
 
@@ -1213,13 +1213,13 @@ end;
 
 procedure BoolTerm;
 begin
-NotFactor;
-while Token = '&' do begin
-Push;
-Next;
-NotFactor;
-PopAnd;
-end;
+   NotFactor;
+   while Token = '&' do begin
+      Push;
+      Next;
+      NotFactor;
+      PopAnd;
+   end;
 end;
 
 
@@ -1228,9 +1228,9 @@ end;
 
 procedure BoolOr;
 begin
-Next;
-BoolTerm;
-PopOr;
+   Next;
+   BoolTerm;
+   PopOr;
 end;
 
 
@@ -1239,9 +1239,9 @@ end;
 
 procedure BoolXor;
 begin
-Next;
-BoolTerm;
-PopXor;
+   Next;
+   BoolTerm;
+   PopXor;
 end;
 
 
@@ -1250,14 +1250,14 @@ end;
 
 procedure BoolExpression;
 begin
-BoolTerm;
-while IsOrOp(Token) do begin
-Push;
-case Token of
-'|': BoolOr;
-'~': BoolXor;
-end;
-end;
+   BoolTerm;
+   while IsOrOp(Token) do begin
+      Push;
+      case Token of
+       '|': BoolOr;
+       '~': BoolXor;
+      end;
+   end;
 end;
 
 
@@ -1271,30 +1271,30 @@ end;
 procedure Assignment;
 var Name: string;
 begin
-CheckTable(Value);
-Name := Value;
-Next;
-if stype[locate(Name)]='r' then Abort('subr can''t be assigned');
-if stype[locate(Name)]='S' then cal(Name)
-else begin
-MatchString('=');
-if stype[locate(Name)]='r' then cal(Name)
-else BoolExpression;
-Store(Name);
-end;
+   CheckTable(Value);
+   Name := Value;
+   Next;
+   if stype[locate(Name)]='r' then Abort('subr can''t be assigned');
+   if stype[locate(Name)]='S' then cal(Name)
+   else begin
+   MatchString('=');
+   if stype[locate(Name)]='r' then cal(Name)
+   else BoolExpression;
+   Store(Name);
+   end;
 end;
 
 {PROCEDURE assignstring;
 var Name: string;
 begin
-CheckTable(Value);
-Name := Value;
-Next;
-MatchString('=');
-MatchString('"');
-Stringa;
-MatchString('"');
-Stores(Name);
+   CheckTable(Value);
+   Name := Value;
+   Next;
+   MatchString('=');
+   MatchString('"');
+   Stringa;
+   MatchString('"');
+   Stores(Name);
 end;
 }
 {---------------------------------------------------------------}
@@ -1305,21 +1305,21 @@ procedure Block; Forward;
 procedure DoIf;
 var L1, L2: string;
 begin
-Next;
-BoolExpression;
-L1 := NewLabel;
-L2 := L1;
-BranchFalse(L1);
-Block;
-if Token = 'l' then begin
-Next;
-L2 := NewLabel;
-Branch(L2);
-PostLabel(L1);
-Block;
-end;
-PostLabel(L2);
-MatchString('FSE');
+   Next;
+   BoolExpression;
+   L1 := NewLabel;
+   L2 := L1;
+   BranchFalse(L1);
+   Block;
+   if Token = 'l' then begin
+      Next;
+      L2 := NewLabel;
+      Branch(L2);
+      PostLabel(L1);
+      Block;
+   end;
+   PostLabel(L2);
+   MatchString('FSE');
 end;
 
 
@@ -1350,33 +1350,33 @@ end;
 procedure DoWhile;
 var L1, L2: string;
 begin
-Next;
-L1 := NewLabel;
-ciclo:=lcount;
-L2 := NewLabel;
-PostLabel(L1);
-BoolExpression;
-BranchFalse(L2);
-Block;
-MatchString('FMENTRE');
-Branch(L1);
-PostLabel(L2);
+   Next;
+   L1 := NewLabel;
+   ciclo:=lcount;
+   L2 := NewLabel;
+   PostLabel(L1);
+   BoolExpression;
+   BranchFalse(L2);
+   Block;
+   MatchString('FMENTRE');
+   Branch(L1);
+   PostLabel(L2);
 end;
 
 procedure repeatun;
 var L1, L2: string;
 begin
-Next;
-L1 := NewLabel;
-ciclo:=lcount;
-L2 := NewLabel;
-PostLabel(L1);
-block;
-MatchString('FINCHE');
-BoolExpression;
-Branchtrue(L2);
-Branch(L1);
-PostLabel(L2);
+   Next;
+   L1 := NewLabel;
+   ciclo:=lcount;
+   L2 := NewLabel;
+   PostLabel(L1);
+   block;
+   MatchString('FINCHE');
+   BoolExpression;
+   Branchtrue(L2);
+   Branch(L1);
+   PostLabel(L2);
 
 end;
 
@@ -1386,10 +1386,10 @@ end;
 
 procedure ReadVar;
 begin
-CheckIdent;
-CheckTable(Value);
-ReadIt(Value);
-Next;
+   CheckIdent;
+   CheckTable(Value);
+   ReadIt(Value);
+   Next;
 end;
 
 
@@ -1398,14 +1398,14 @@ end;
 
 procedure DoRead;
 begin
-Next;
-MatchString('(');
-ReadVar;
-while Token = ',' do begin
-Next;
-ReadVar;
-end;
-MatchString(')');
+   Next;
+   MatchString('(');
+   ReadVar;
+   while Token = ',' do begin
+      Next;
+      ReadVar;
+   end;
+   MatchString(')');
 end;
 {--------------------------------------------------------------}
 { Process a Write Statement }
@@ -1413,39 +1413,39 @@ procedure per;
 var lab:string;
 begin
 lab:=newlabel;
-Next;
-MatchString('(');
-assignment;
+   Next;
+   MatchString('(');
+   assignment;
 postlabel(lab+'t') ;(*'L'+lab+'t'*)
-MatchString(':');
-BoolExpression;
-Branchfalse(lab+'f');
-branch(lab+'b');
-MatchString(':');
+   MatchString(':');
+   BoolExpression;
+   Branchfalse(lab+'f');
+   branch(lab+'b');
+   MatchString(':');
 postlabel(lab+'a');
-assignment;
-branch(lab+'t');
+   assignment;
+   branch(lab+'t');
 postlabel(lab+'b');
-MatchString(')');
-block;
-branch(lab+'a');
+   MatchString(')');
+   block;
+   branch(lab+'a');
 postlabel(lab+'f');
-matchString('FPER');
+   matchString('FPER');
 end;
 procedure ter;
 var lab:string;
 begin
 lab:=newlabel;
-Next;
-boolexpression;
-branchfalse(lab);
-MatchString(':');
-assignment;
+   Next;
+   boolexpression;
+   branchfalse(lab);
+   MatchString(':');
+   assignment;
 branch(lab+'e');
 postlabel(lab);
-MatchString(':');
-assignment;
-MatchString('FAST');
+   MatchString(':');
+   assignment;
+   MatchString('FAST');
 postlabel(lab+'e');
 end;
 
@@ -1453,24 +1453,24 @@ procedure rep;
 var lab:string;
 begin
 lab:=newlabel;
-Next;
-MatchString('(');
-assignment;
+   Next;
+   MatchString('(');
+   assignment;
 postlabel(lab+'t') ;(*'L'+lab+'t'*)
-MatchString(':');
-BoolExpression;
-Branchtrue(lab+'f');
-branch(lab+'b');
-MatchString(':');
+   MatchString(':');
+   BoolExpression;
+   Branchtrue(lab+'f');
+   branch(lab+'b');
+   MatchString(':');
 postlabel(lab+'a');
-assignment;
-branch(lab+'t');
+   assignment;
+   branch(lab+'t');
 postlabel(lab+'b');
-MatchString(')');
-block;
-branch(lab+'a');
+   MatchString(')');
+   block;
+   branch(lab+'a');
 postlabel(lab+'f');
-matchString('FREP');
+   matchString('FREP');
 end;
 {
 procedure doasm;
@@ -1484,16 +1484,16 @@ end;
 }
 procedure DoWrite;
 begin
-Next;
-MatchString('(');
-Expression;
-WriteIt;
-while Token = ',' do begin
-Next;
-Expression;
-WriteIt;
-end;
-MatchString(')');
+   Next;
+   MatchString('(');
+   Expression;
+   WriteIt;
+   while Token = ',' do begin
+      Next;
+      Expression;
+      WriteIt;
+   end;
+   MatchString(')');
 end;
 
 
@@ -1502,15 +1502,15 @@ end;
 
 procedure SkipComment;
 begin
-while Look <> '}' do
-GetCharX;
-GetCharX;
+   while Look <> '}' do
+      GetCharX;
+   GetCharX;
 end;
 procedure lineSkipComment;
 begin
-while Look <> CR do
-GetCharX;
-GetCharX;
+   while Look <> CR do
+      GetCharX;
+   GetCharX;
 end;
 
 {--------------------------------------------------------------}
@@ -1519,24 +1519,24 @@ end;
 
 procedure GetChar;
 begin
-GetCharX;
-case Look of
-'{' : SkipComment;
-';' : lineSkipComment(*se non funziona e colpa mia*)
-end;
+   GetCharX;
+   case Look of
+    '{' : SkipComment;
+    ';' : lineSkipComment(*se non funziona e colpa mia*)
+    end;
 end;
 {--------------------------------------------------------------}
 {procedure SkipWhitez;
 begin
-while IsWhite(Look) do
-GetCharx;
+   while IsWhite(Look) do
+      GetCharx;
 end;}
 
 
-procedure getstring; {%%%%%%}
+procedure getstring;  {%%%%%%}
 var i:integer;
 begin
-sasm:=' ';
+sasm:='                                                                                ';
 i:=0;
 getchar;
 skipwhite;
@@ -1549,11 +1549,11 @@ getcharX;
 end;
 
 function recognize:boolean;
-var i:integer;
+var
 cap:boolean;
 begin
 cap:=false;
-if sasm='FASM '
+if sasm='FASM                                                                            '
 then cap:=true;
 recognize:=cap;
 end;
@@ -1565,7 +1565,7 @@ if not recognize then writeln(sasm);
 while (not recognize) do begin
 getstring;
 if not recognize then writeln(sasm);
-end; {%%%%%}
+end;            {%%%%%}
 next;
 end;
 
@@ -1628,26 +1628,26 @@ if not flag then next;
 end;
 procedure Block;
 begin
-Scan;
-while not(Token in ['e', 'l']) do begin
-case Token of
-'X': doret;
-'a': doasm;
-'i': DoIf;
-'w': DoWhile;
-'q': Repeatun;
-'R': DoRead;
-'B': stampab;
-'W': DoWrite;
-'P': Per;
-'O': rep;
-'E': ter;
-'z': loop;
-'f': brek;
-else Assignment;
-end;
-Scan;
-end;
+   Scan;
+   while not(Token in ['e', 'l']) do begin
+      case Token of
+       'X': doret;
+       'a': doasm;
+       'i': DoIf;
+       'w': DoWhile;
+       'q': Repeatun;
+       'R': DoRead;
+       'B': stampab;
+       'W': DoWrite;
+       'P': Per;
+       'O': rep;
+       'E': ter;
+       'z': loop;
+       'f': brek;
+       else Assignment;
+      end;
+      Scan;
+   end;
 end;
 
 
@@ -1657,20 +1657,20 @@ end;
 procedure Alloc;
 var tipo:char;
 begin
-Next;
-(*questa parte di gestione variabili l'ho fatta tutta io..*)
-case KWcode[Lookup(Addr(KWlist), Value, NKW) + 1] of
-'h':begin tipo:='w'; Next;end;{*WORD(16 bittozzi)*}
-'j':begin tipo:='b'; Next;end;{*single byte(8 sporchi bit)*}
-'k':begin tipo:='d'; Next;end;{*double word(32 bit e crepi l'avarizia)*}
-else begin tipo:='w'; end;
-end;
-(*..*)
-if Token <> 'x' then Expected('Variable Name');
-CheckDup(Value);
-AddEntry(Value, tipo);
-Allocate(Value, '0',tipo);
-Next;
+   Next;
+   (*questa parte di gestione variabili l'ho fatta tutta io..*)
+   case KWcode[Lookup(Addr(KWlist), Value, NKW) + 1] of
+   'h':begin tipo:='w'; Next;end;{*WORD(16 bittozzi)*}
+   'j':begin tipo:='b'; Next;end;{*single byte(8 sporchi bit)*}
+   'k':begin tipo:='d'; Next;end;{*double word(32 bit e crepi l'avarizia)*}
+   else begin tipo:='w'; end;
+   end;
+   (*..*)
+   if Token <> 'x' then Expected('Variable Name');
+   CheckDup(Value);
+   AddEntry(Value, tipo);
+   Allocate(Value, '0',tipo);
+   Next;
 end;
 procedure topdecls;forward;
 procedure SubDecls;
@@ -1678,40 +1678,40 @@ begin
 Scan;
 while token in ['S','r'] do begin
 case token of
-'S': begin
-subdec;
-scan;
-end;
+'S':  begin
+      subdec;
+      scan;
+      end;
 'r': begin
-subrdec;
-scan;
-end;
+     subrdec;
+     scan;
+     end;
 end;
 end;
 end;
 procedure TopDecls;
 begin
-Scan;
-while Token = 'v' do
-Alloc;
-while Token = ',' do
-Alloc;
+   Scan;
+   while Token = 'v' do
+      Alloc;
+      while Token = ',' do
+         Alloc;
 end;
 
 
 function IsVarType(c: char): boolean;
 begin
-IsVarType := c in ['b','w','d','B', 'W', 'D','r'];
+   IsVarType := c in ['b','w','d','B', 'W', 'D','r'];
 end;
 { Get a Variable Type from the Symbol Table }
 
 function VarType(Name: symbol): char;
 var Typ: char;
 begin
-Typ := Stype[locate(Name)];
-if not IsVarType(Typ) then Abort('Identifier ' + Name +
-' is not a variable');
-VarType := Typ;
+   Typ := Stype[locate(Name)];
+   if not IsVarType(Typ) then Abort('Identifier ' + Name +
+                                        ' is not a variable');
+   VarType := Typ;
 end;
 
 {--------------------------------------------------------------}
@@ -1731,15 +1731,15 @@ emitln('xor eax,eax');
 emitln('mov ax,['+Dest+']'); end;
 'd':begin emitln('mov eax,['+Dest+']'); end;
 'r':begin emitln('call '+Dest);
-emitln('pop eax');end;
+          emitln('pop eax');end;
 end;
 end;
 {DA FARE}
 
 procedure LoadVar(Name:Symbol);
 begin
-if not InTable(Name) then Undefined(Name);
-Move(Vartype(Name),Name);
+   if not InTable(Name) then Undefined(Name);
+   Move(Vartype(Name),Name);
 end;
 
 {---------------------------------------------------------------}
@@ -1761,7 +1761,7 @@ end;
 
 procedure Store(Name: Symbol);
 begin
-StoreVar(Name,VarType(Name));
+   StoreVar(Name,VarType(Name));
 end;
 
 
@@ -1769,8 +1769,8 @@ procedure Init;
 VAR I:INTEGER;
 begin
 FOR I:=1 TO MAXENTRY do STYPE[I]:='?';
-GetChar;
-Next;
+   GetChar;
+   Next;
 end;
 (*Skippa un invio.*)
 procedure fin;
@@ -1847,18 +1847,18 @@ scan;
 end;
 end;
 begin
-iniz:=false;
-Init;
-MatchString('PROGRAM');
-class;
-Header;
-TopDecls;
-writeln('SEGMENT .text public class=code align=1');
-subDecls;
-MatchString('INIZIO');
-Prolog;
-Block;
-MatchString('FINE');
-Epilog;
+   iniz:=false;
+   Init;
+   MatchString('PROGRAM');
+   class;
+   Header;
+   TopDecls;
+   writeln('SEGMENT .text public class=code align=1');
+   subDecls;
+   MatchString('INIZIO');
+   Prolog;
+   Block;
+   MatchString('FINE');
+   Epilog;
 end.
 {--------------------------------------------------------------}
