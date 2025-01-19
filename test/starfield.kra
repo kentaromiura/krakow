@@ -1,17 +1,19 @@
 program
 importa graph
 importa misc
-var i
+var i,j
 inizio
 setmodex
 per(i=0:i<254:i=i+1)
-    x=random
-    delay
-    c=random
-    delay
-    y=random
-    delay
-    PUTPIXEL
+    per(j=0:j<254:j=j+1)
+        x=random
+        ;delay
+        c=random
+        ;delay
+        y=random
+        delay
+        PUTPIXEL
+    fper
 fper
 leggi(tmp)
 restore

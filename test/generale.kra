@@ -3,8 +3,10 @@ program
 var i
 inizio
 
-asm                               ;questa funzione assembly stampa una stringa                            
+asm
+jmp as  ;questa funzione assembly stampa una stringa                            
 stringa1 db "ciao bello,funziona l'assembly inline!!$"
+as:
 mov ax,stringa1
 mov dx,stringa1                   
 {

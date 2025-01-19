@@ -1,6 +1,5 @@
 ; originally posted 2004/04/13 https://www.freeforumzone.com/mobile/d/2925993/LaPasseraSoftware-Presenta-KraKow/discussione.aspx?p=1&pl=6&idm1=37268084
-;proprieta intellettuale di carlesso cristian
-;licenza gpl kentaforum.has.it
+; MIT license
 SEGMENT .data
 SEED db 200,103,43,23,65,77,12,44,45,22,54,76,203,225,0,6,34,150,104,164
      db 255,175,125,244,83,156,236,143,247,35,133,168,250,32,120,121,205

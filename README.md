@@ -62,4 +62,4 @@ Files needs to be in the dos `CRLF` formats then you can
 it expects to have the .asm file libraries under c:\krakow, but you can manually change the `%include` directive in the generated assembly if you're so inclined.
 
 
-After that you can pass it to a dos machine and compile via nasm and link the object file with microsoft link, which I don't know where to find but probably is included in https://winworldpc.com/product/microsoft-c-c/6x. I'm not aware of MS ever releasing ms link as freeware so you'd likely need a license (or a msdn account), it's also very possible that a Visual studio free version comes with a compatible linker, but I don't know if that' s the case.
+After that you can pass it to a dos machine and compile via nasm `nasm -f obj` and link the object file with microsoft link. I'm not aware of MS ever releasing ms link as freeware so you'd likely need a license (or a msdn account), it's also very possible that a Visual studio free version comes with a compatible linker, but I don't know if that' s the case, in any case DOS included link.exe seems to work fine.
